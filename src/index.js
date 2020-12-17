@@ -10,8 +10,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.get('/newFeeds', async (req, res) => {
-    res.send(await newsArticleModel.find().skip(Number(req.query.offset || 0)).limit(Number(req.query.limit || 10)));
+    res.send(await newsArticleModel.find().skip(sanatize(req.query.offset, 0)).limit(sanatize(req.query.limit, 10)));
 });
+
+const sanatize = (val, defaultVal) => {
+    if (val === null || val === undefined || isNaN(Number(val))) {
+        return defaultVal;
+    }
+    return Number(val);
+};
 
 app.listen(port, () => console.log(`App listening on port ${port}!`))
 
